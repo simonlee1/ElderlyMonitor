@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!-- Bootstrap CSS -->
+
+		<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<script type="text/javascript">
+				var chart = null;
+				var curData = null;
+				function update(){
+					$.get("/UpdateData", (data) =>{
+						console.log("updating");
+						curData = data;
+						dataPoints = []
+						table = document.getElementById("tableData")
+						for (var i = 0; i < data.heartRate.length; i++){
+							dataPoints.push({x:  Math.trunc(parseFloat(data.heartRate[i].timestamp) * 1000), y: data.heartRate[i].heartRate})
+						}
+
+						table.innerHTML = "";
+						for (var i = 0; i < data.falls.length; i++){
+							table.innerHTML += `<tr><td>${data.falls[i].timestamp}</td></tr>`
+						}
+
+						chart = new CanvasJS.Chart("chartContainer",
+						{
+							zoomEnabled: true,
+
+							title:{
+							 text: "Heartrate Monitor"
+						 },
+						 axisX:{
+								title: "Time",
+								gridThickness: 2,
+								labelAngle: -20
+							},
+							axisY:{
+								title: "Heartrate"
+							},
+						 data: [
+						 {
+							type: "line",
+							xValueType: "dateTime",
+							dataPoints: dataPoints
+						}
+						]
+					});
+
+					chart.render();
+					});
+					setTimeout(update, 5000);
+				}
+
+				window.onload = update;
+
+
+	</script>
+		<title>User Portal</title>
+	</head>
+	<body>
+		<div class="d-flex col-md-12 justify-content-center">
+			<div id="chartContainer" style="height: 300px; width: 80%;"></div>
+			<div class="col-md-6">
+				<h2>Fall History</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<td>Date</td>
+						</tr>
+					</thead>
+					<tbody id="tableData">
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+	</body>
+
+</html>
